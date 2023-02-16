@@ -1,0 +1,29 @@
+{
+  "name": "pass-trk-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=dev node server.js",
+    "watch": "cross-env NODE_ENV=dev nodemon ./ ./server.js",
+    "prod": "cross-env NODE_ENV=prod node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.2.0",
+    "axios-debug-log": "^1.0.0",
+    "body-parser": "^1.20.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "knex": "^2.4.2",
+    "lru-cache": "^7.14.1",
+    "mssql": "^9.0.1",
+    "nodemon": "^2.0.20",
+    "package.json": "^2.0.1",
+    "winston": "^3.8.2",
+    "winston-daily-rotate-file": "^4.7.1"
+  }
+}
