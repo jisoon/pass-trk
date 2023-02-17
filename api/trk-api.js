@@ -5,14 +5,15 @@ const addrService = require('../service/addr-service');
 router.get('/', async (req, res) => {
 
   const refineReq = {
+    ip : getIp(req),
     comp : req.query.comp,
     trkcd : req.query.trkcd,
     trkno : req.query.trkno,
   }
 
-  const refineResult = addrService.refine(refineReq);
+  const refineResult = await addrService.refine(refineReq);
 
-  return res.json(refineResult);
+  res.json(refineResult);
 });
 
 function getIp(req) {
