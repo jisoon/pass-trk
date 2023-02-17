@@ -8,8 +8,6 @@ router.post('/', [
           'Message check parameter fail to pass(logisticsOrderCode)'),
       body('trackingNumber').notEmpty().withMessage(
           'Message check parameter fail to pass(trackingNumber)'),
-      body('bizType').notEmpty().withMessage(
-          'Message check parameter fail to pass(bizType)'),
       body('logisticsOrderCreateTime').notEmpty().withMessage(
           'Message check parameter fail to pass(logisticsOrderCreateTime)'),
       body('returnParcel').notEmpty().withMessage(
