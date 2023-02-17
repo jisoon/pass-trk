@@ -28,7 +28,7 @@ axios.interceptors.response.use((response) => {
   return Promise.reject(error);
 });
 
-async function refine(refineReq) {
+async function tracking(refineReq) {
   // 요청 이력 저장
   // INSERT INTO APITRK
   // (COMP_CD, TRK_CD, TRK_NO
@@ -41,9 +41,9 @@ async function refine(refineReq) {
 
   let apiResponse;
   if (refineReq.trkcd.toUpperCase() === 'CJ') {
-    apiResponse = await refineCj(refineReq.trkno);
+    apiResponse = await trackingCj(refineReq.trkno);
   } else {
-    apiResponse = await refinePost(refineReq.trkno);
+    apiResponse = await trackingPost(refineReq.trkno);
   }
 
   await insertReqLog(refineReq, apiResponse);
@@ -63,9 +63,7 @@ function insertReqLog(refineReq, apiResponse) {
   });
 }
 
-async function refineCj(trackNo) {
-
-  // fwdCode=KACT&HBLNo=운송장번호
+async function trackingCj(trackNo) {
   return await axios.get(process.env.CJ_API_URL, {
     headers: {
       'Content-Type': 'application/json',
@@ -75,7 +73,7 @@ async function refineCj(trackNo) {
   });
 }
 
-async function refinePost(trackNo) {
+async function trackingPost(trackNo) {
   return await axios.get(process.env.POST_API_URL, {
     headers: {
       'Content-Type': 'application/json',
@@ -88,5 +86,5 @@ async function refinePost(trackNo) {
 }
 
 module.exports = {
-  refine: refine
+  tracking: tracking
 };

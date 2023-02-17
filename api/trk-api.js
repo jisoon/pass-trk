@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const addrService = require('../service/addr-service');
+const trackingService = require('../service/tracking-service');
 
 router.get('/', async (req, res) => {
 
@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
     trkno : req.query.trkno,
   }
 
-  const refineResult = await addrService.refine(refineReq);
+  const refineResult = await trackingService.tracking(refineReq);
 
   res.json(refineResult);
 });
