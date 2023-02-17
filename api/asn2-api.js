@@ -18,7 +18,7 @@ router.post('/', [
           'Message check parameter fail to pass(undeliverableOption)'),
     ],
     async (req, res) => {
-      const returnParcel = req.body.returnParcel;
+      const returnParcel = JSON.parse(req.body.returnParcel);
       const refineReq = {
         logisticsOrderCode: req.body.logisticsOrderCode,
         trackingNumber: req.body.trackingNumber,
