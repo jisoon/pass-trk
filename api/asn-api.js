@@ -3,7 +3,6 @@ const {body, validationResult} = require('express-validator');
 const router = express.Router();
 const asnService = require('../service/asn-service');
 const Joi = require('joi');
-const errorMsgService = require('../service/error-msg')
 const {createErrorRes} = require("../service/error-msg");
 
 router.post('/',
@@ -21,14 +20,14 @@ router.post('/',
 
       if (!errors.isEmpty()) {
         return res.status(200).json(
-            errorMsgService.createErrorRes(errors.array()[0].param));
+            createErrorRes(errors.array()[0].param));
       }
 
       const logisticsJson = JSON.parse(req.body.logistics_interface);
       const logisticsJsonValidationResult = validateLogisticsJson(
           logisticsJson);
       if (logisticsJsonValidationResult.error) {
-        return res.status(200).json(errorMsgService.createErrorRes(
+        return res.status(200).json(createErrorRes(
             logisticsJsonValidationResult.error.details[0].context.key));
       }
 

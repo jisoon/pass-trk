@@ -1,21 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const { body, validationResult } = require('express-validator');
+const {body, validationResult} = require('express-validator');
 const asn2Service = require('../service/asn2-service');
+const {createErrorRes} = require("../service/error-msg");
 
 router.post('/', [
-      body('logisticsOrderCode').notEmpty().withMessage(
-          'Message check parameter fail to pass(logisticsOrderCode)'),
-      body('trackingNumber').notEmpty().withMessage(
-          'Message check parameter fail to pass(trackingNumber)'),
-      body('logisticsOrderCreateTime').notEmpty().withMessage(
-          'Message check parameter fail to pass(logisticsOrderCreateTime)'),
-      body('returnParcel').notEmpty().withMessage(
-          'Message check parameter fail to pass(returnParcel)'),
-      body('laneCode').notEmpty().withMessage(
-          'Message check parameter fail to pass(laneCode)'),
-      body('undeliverableOption').notEmpty().withMessage(
-          'Message check parameter fail to pass(undeliverableOption)'),
+      body('logisticsOrderCode').notEmpty(),
+      body('trackingNumber').notEmpty(),
+      body('logisticsOrderCreateTime').notEmpty(),
+      body('returnParcel').notEmpty(),
+      body('laneCode').notEmpty(),
+      body('undeliverableOption').notEmpty(),
     ],
     async (req, res) => {
       const returnParcel = JSON.parse(req.body.returnParcel);
@@ -32,12 +27,8 @@ router.post('/', [
       }
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(200).json({
-          success: "false",
-          errorCode: "S20",
-          errors: errors.array()[0].msg});
+        return res.status(200).json(createErrorRes(errors.array()[0].param));
       }
-
 
       await asn2Service.add(refineReq);
 
