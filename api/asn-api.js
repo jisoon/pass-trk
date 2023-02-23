@@ -1,32 +1,35 @@
 const express = require("express");
-const { body, validationResult } = require('express-validator');
+const {body, validationResult} = require('express-validator');
 const router = express.Router();
 const asnService = require('../service/asn-service');
+const Joi = require('joi');
+const errorMsgService = require('../service/error-msg')
+const {createErrorRes} = require("../service/error-msg");
 
 router.post('/',
     [
-      body('msg_type').notEmpty().withMessage(
-          'Message check parameter fail to pass(msg_type)'),
-      body('msg_id').notEmpty().withMessage(
-          'Message check parameter fail to pass(msg_id)'),
-      body('from_code').notEmpty().withMessage(
-          'Message check parameter fail to pass(from_code)'),
-      body('partner_code').notEmpty().withMessage(
-          'Message check parameter fail to pass(partner_code)'),
-      body('data_digest').notEmpty().withMessage(
-          'Message check parameter fail to pass(data_digest)'),
-      body('logistics_interface').notEmpty().withMessage(
-          'Message check parameter fail to pass(logistics_interface)'),
+      body('msg_type').notEmpty(),
+      body('msg_id').notEmpty(),
+      body('from_code').notEmpty(),
+      body('partner_code').notEmpty(),
+      body('data_digest').notEmpty(),
+      body('logistics_interface').notEmpty(),
 
     ], async (req, res) => {
 
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
-        return res.status(200).json({
-          success: "false",
-          errorCode: "S20",
-          errors: errors.array()[0].msg});
+        return res.status(200).json(
+            errorMsgService.createErrorRes(errors.array()[0].param));
+      }
+
+      const logisticsJson = JSON.parse(req.body.logistics_interface);
+      const logisticsJsonValidationResult = validateLogisticsJson(
+          logisticsJson);
+      if (logisticsJsonValidationResult.error) {
+        return res.status(200).json(errorMsgService.createErrorRes(
+            logisticsJsonValidationResult.error.details[0].context.key));
       }
 
       const refineReq = {
@@ -38,20 +41,28 @@ router.post('/',
         logistics_interface: req.body.logistics_interface,
       }
 
-      await asnService.add(refineReq);
+      await asnService.add(refineReq, logisticsJson);
 
       res.json({success: "true"});
     });
 
-function getIp(req) {
-  let ips = (
-      req.headers['cf-connecting-ip'] ||
-      req.headers['x-real-ip'] ||
-      req.headers['x-forwarded-for'] ||
-      req.connection.remoteAddress || ''
-  ).split(',');
+// {"":"LP00026858846767","":"AECA00015","":"false","":"2022-11-09 17:39:00","":
+// {"name":"SHIN","phone":"01011112222","moblie":"01033334444"},"":"","":"Discard"}
 
-  return ips[0].trim();
+function validateLogisticsJson(logisticsJson) {
+
+  const schema = Joi.object({
+    logisticsOrderCode: Joi.string().required(),
+    bizType: Joi.string(),
+    trackingNumber: Joi.string().required(),
+    logisticsOrderCreateTime: Joi.string().required(),
+    returnParcel: Joi.object().required(),
+    lanecode: Joi.string().required(),
+    undeliverableOption: Joi.string().required(),
+  });
+
+  return schema.validate(logisticsJson);
+
 }
 
 module.exports = router;
